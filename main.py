@@ -46,7 +46,7 @@ def main():
                 category = input("Category: ").strip()
                 print(ledger.filter_by_category(category))
             elif choice == "4":
-                month = input("Month (MM or YYYY-MM) ").strip()
+                month = input("Month: ").strip()
                 print(ledger.filter_by_month(month))
             elif choice == "5":
                 print(ledger.get_balance())

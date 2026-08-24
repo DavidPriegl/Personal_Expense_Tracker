@@ -29,7 +29,7 @@ class Ledger:
 
     def filter_by_month(self, month):
         month = f"{int(month):02d}"
-        month_transactions = [t for t in self._transaction if t.date[5:7] or t.date[:7] == month]
+        month_transactions = [t for t in self._transaction if t.date[5:7] == month]
         if not month_transactions:
             raise ValueError(f"{month}. month not found.")
         lines = [f"{t.date}  {t.category}  {t.amount} {t.type}" for t in month_transactions]
