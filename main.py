@@ -11,14 +11,16 @@ MENU = """
 5. View balance
 6. Most common category
 7. Monthly breakdown
-8. Save to file
-9. Load from file
 0. Exit
 """
 
 
 def main():
     ledger = Ledger()
+    try:
+        ledger.read_from_json()
+    except FileNotFoundError:
+        pass
     while True:
         print(MENU)
         choice = input("Choose an option: ").strip()
@@ -44,7 +46,7 @@ def main():
                 category = input("Category: ").strip()
                 print(ledger.filter_by_category(category))
             elif choice == "4":
-                month = input("Month (1-12): ").strip()
+                month = input("Month (MM or YYYY-MM) ").strip()
                 print(ledger.filter_by_month(month))
             elif choice == "5":
                 print(ledger.get_balance())
@@ -53,14 +55,6 @@ def main():
             elif choice == "7":
                 result = ledger.group_by_month()
                 print(result if result else "No transactions recorded.")
-            elif choice == "8":
-                ledger.write_to_json()
-                print("Transactions saved")
-            elif choice == "9":
-                ledger.read_from_json()
-                print("Transactions loaded")
-            else:
-                print("Invalid option.")
         except ValueError as e:
             print(f"Error: {e}")
         except IndexError:

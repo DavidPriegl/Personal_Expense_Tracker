@@ -1,7 +1,6 @@
 from transaction import Transaction
 from collections import Counter, defaultdict
 import json
-from json import JSONEncoder
 
 class Ledger:
     def __init__(self):
@@ -19,6 +18,7 @@ class Ledger:
             raise ValueError("Type can only be income or expense.")
 
         self._transaction.append(Transaction(date, category.lower(), amount, t_type.lower()))
+        self.write_to_json()
 
     def filter_by_category(self, category):
         if category.lower() not in (t.category for t in self._transaction):
@@ -29,19 +29,24 @@ class Ledger:
 
     def filter_by_month(self, month):
         month = f"{int(month):02d}"
-        month_transactions = [t for t in self._transaction if t.date[5:7] == month]
+        month_transactions = [t for t in self._transaction if t.date[5:7] or t.date[:7] == month]
         if not month_transactions:
             raise ValueError(f"{month}. month not found.")
         lines = [f"{t.date}  {t.category}  {t.amount} {t.type}" for t in month_transactions]
-        return f"In the {month}. month, these transactions are recorded:\n" + "\n".join(lines)        
+        return f"In the {month}. month, these transactions are recorded:\n" + "\n".join(lines) 
 
     def get_balance(self):
         balance = 0
         for t in self._transaction:
-            balance += t.amount
+            if t.type == 'expense':
+                balance -= t.amount
+            else:
+                balance += t.amount
         return f"Wallet balance: {balance} $"
 
     def most_common_category(self):
+        if len(self._transaction) == 0:
+            return 'No transaction found.'
         categorys = [t.category for t in self._transaction]
         counter = Counter(categorys)
         return f"Your most common category is '{counter.most_common(1)[0][0]}'"
@@ -49,7 +54,7 @@ class Ledger:
     def group_by_month(self):
         groups = defaultdict(list)
         for t in self._transaction:
-            groups[t.date[5:7]].append(t)
+            groups[t.date[:7]].append(t)
         parts = []
         for month in sorted(groups):
             lines = [f"{t.date}  {t.category}  {t.amount} {t.type}" for t in groups[month]]
