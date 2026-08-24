@@ -1,5 +1,7 @@
 from transaction import Transaction
 from collections import Counter, defaultdict
+import json
+from json import JSONEncoder
 
 class Ledger:
     def __init__(self):
@@ -13,15 +15,15 @@ class Ledger:
         if amount < 0:
             raise ValueError("Amount can't be negative.")
         
-        if t_type not in ("income","expense"):
+        if t_type.lower() not in ("income","expense"):
             raise ValueError("Type can only be income or expense.")
 
-        self._transaction.append(Transaction(date, category, amount, t_type))
+        self._transaction.append(Transaction(date, category.lower(), amount, t_type.lower()))
 
     def filter_by_category(self, category):
-        if category not in (t.category for t in self._transaction):
+        if category.lower() not in (t.category for t in self._transaction):
             raise ValueError(f"{category} category not found.")
-        category_transactions = [t for t in self._transaction if t.category == category]
+        category_transactions = [t for t in self._transaction if t.category == category.lower()]
         lines = [f"{t.date}  {t.category}  {t.amount} {t.type}" for t in category_transactions]
         return f"In the {category} category, these transactions are recorded:\n" + "\n".join(lines)
 
@@ -55,7 +57,14 @@ class Ledger:
         return "\n\n".join(parts)
 
     def write_to_json(self):
-        
+        data = [t._asdict() for t in self._transaction]
+        with open('transaction.json', 'w') as file:
+            json.dump(data, file, indent=4, ensure_ascii=False)
+
+    def read_from_json(self):
+        with open('transaction.json', 'r') as file:
+            data = json.load(file)
+            self._transaction = [Transaction(**item) for item in data]
 
 if __name__ == "__main__":
     ledger = Ledger()

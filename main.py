@@ -54,9 +54,11 @@ def main():
                 result = ledger.group_by_month()
                 print(result if result else "No transactions recorded.")
             elif choice == "8":
-                print("Save to file is not implemented yet.")
+                ledger.write_to_json()
+                print("Transactions saved")
             elif choice == "9":
-                print("Load from file is not implemented yet.")
+                ledger.read_from_json()
+                print("Transactions loaded")
             else:
                 print("Invalid option.")
         except ValueError as e:
