@@ -8,10 +8,10 @@ class Ledger:
 
     @property
     def list_transactions(self):
-        return self._transaction
+        return list(self._transaction)
 
     def add_transaction(self, date, category, amount, t_type):
-        if amount < 0:
+        if amount <= 0:
             raise ValueError("Amount can't be negative.")
         
         if t_type.lower() not in ("income","expense"):
