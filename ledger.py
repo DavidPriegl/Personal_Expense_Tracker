@@ -1,5 +1,6 @@
 from transaction import Transaction
 from collections import Counter, defaultdict
+from datetime import datetime
 import json
 
 class Ledger:
@@ -11,6 +12,10 @@ class Ledger:
         return list(self._transaction)
 
     def add_transaction(self, date, category, amount, t_type):
+        try:
+            datetime.strptime(date, "%Y-%m-%d")
+        except ValueError:
+            raise ValueError("Date must be YYYY-MM-DD.")
         if amount <= 0:
             raise ValueError("Amount can't be negative.")
         
